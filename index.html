@@ -1,71 +1,115 @@
-<canvas id="gc" width="400" height="400"></canvas>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #000000;
+}
+body {
+	color: white;
+    background-color: #111111;
+}
+</style>
+</head>
+<body onload="startGame()">
 <script>
-    window.onload = function () {
-        canv = document.getElementById("gc");
-        ctx = canv.getContext("2d");
-        document.addEventListener("keydown", keyPush);
-        setInterval(game, 1000 / 15);
+
+var pedrainicial;
+var snake = [];
+var tamanho = 1;
+
+function startGame() {
+    pedrainicial = new quadrado(30, 30, "white", 10, 120);
+    snake.push(pedrainicial);
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 480;
+        this.canvas.height = 270;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 200);
+    },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    px = py = 10;
-    gs = tc = 20;
-    ax = ay = 15;
-    xv = yv = 0;
+}
 
-    function game() {
-        px += xv;
-        py += yv;
-        if (px < 0) {
-            px = tc - 1;
-        }
-        if (px > tc - 1) {
-            px = 0;
-        }
-        if (py < 0) {
-            px = tc - 1;
-        }
-        if (py > tc - 1) {
-            px = 0;
-        }
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canv.width, canv.height);
+function quadrado(width, height, color, x, y) {
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.x = x;
+    this.y = y;   
+    this.anterior;
 
-        ctx.fillStyle = "lime";
-        for (var i = 0; i < trail.lenght; i++) {
-            ctx.fillRect(trail[i].x * gs, trail[i].y * gs, gs - 2, gs - 2);
-            if (trail[i].x == px && trail[i].y == py) {
-                tail=  5;
-            }
-        }
-        trail.push({x:px,y:py});
-        while(trail.lenght>trail){
-            trail.shift();
-        }
-
-        if(ax==px && ay == py){
-            trail++;
-            ax=Math.floor(Math.random()*tc);
-            ay=Math.floor(Math.random()*tc);
-        }
-
-        ctx.fillStyle = "red";
-        ctx.fillRect(ax * gs, ay * gs, gs - 2, gs - 2);
+    this.cresce = function() {
+        snake.push(new quadrado(30, 30, "white", 10, 120));
     }
 
-    function keyPush(evt) {
-        switch (evt.keyCode) {
-            case 37:
-                xv = -1; yv = 0;
-                break;
-            case 38:
-                xv = 0; yv = -1;
-                break;
-            case 39:
-                xv = 1; yv = 0;
-                break;
-            case 40:
-                xv = 0; yv = 1;
-                break;
-        }
-       
+    this.newPos = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;  
+    }  
+	 
+    this.update = function() {
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+
     }
+}
+
+
+
+function updateGameArea() {
+    myGameArea.clear();
+
+    snake.forEach(myFunction);
+
+function myFunction(item, index) {
+   item.newPos();    
+   item.update();
+}	
+
+
+}
+
+window.addEventListener('keydown',this.controla,false);
+
+function controla(e) {
+    //alert(e.keyCode);
+	if (e.keyCode == 38){
+		pedrainicial.speedX = 0;
+		pedrainicial.speedY = -30;
+	} else 	if(e.keyCode == 40){
+		pedrainicial.speedX = 0;
+		pedrainicial.speedY = 30;
+	} else 	if(e.keyCode == 37){
+		pedrainicial.speedY = 0;
+		pedrainicial.speedX = -30;
+	} else	if(e.keyCode == 39){
+		pedrainicial.speedY = 0;
+		pedrainicial.speedX = 30;
+	} else if(e.keyCode == 32) {
+	 	//alert(e.keyCode);
+		pedrainicial.cresce();
+	}
+
+
+
+}
+
+  
 </script>
+
+
+<p>Snake teste.</p>
+</body>
+</html>
